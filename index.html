@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Video Downloader - Download HD Videos No Watermark</title>
+    <meta name="description" content="Download high-quality videos from Facebook, TikTok, Instagram, and YouTube for free. No watermarks, fast speeds, and supports all devices." />
+    <meta name="keywords" content="video downloader, facebook downloader, tiktok no watermark, instagram saver, youtube downloader, mp4 converter, hd video download" />
+    <meta name="author" content="Social Downloader" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://social-downloader.com/" />
+    <meta property="og:title" content="Social Video Downloader - All in One" />
+    <meta property="og:description" content="Download HD videos from social media without watermarks. 100% Free & Secure." />
+    <meta property="og:image" content="https://social-downloader.com/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://social-downloader.com/" />
+    <meta property="twitter:title" content="Social Video Downloader - All in One" />
+    <meta property="twitter:description" content="Download HD videos from social media without watermarks. 100% Free & Secure." />
+    <meta property="twitter:image" content="https://social-downloader.com/og-image.jpg" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Hind Siliguri"', '"Outfit"', 'sans-serif'],
+            },
+            colors: {
+              dark: '#0f0f1a',
+              glass: 'rgba(255, 255, 255, 0.05)',
+              glassBorder: 'rgba(255, 255, 255, 0.1)',
+              primary: '#6366f1',
+              secondary: '#ec4899',
+              cream: '#FDFDF6',
+              olive: {
+                light: '#C5D89D',
+                medium: '#94A870',
+                dark: '#2A331E',
+                muted: '#5C6B4A',
+              },
+            },
+            animation: {
+              'blob': 'blob 7s infinite',
+              'fade-in-up': 'fadeInUp 0.5s ease-out',
+            },
+            keyframes: {
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(20px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              shimmer: {
+                '100%': { transform: 'translateX(100%)' },
+              }
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      /* Custom Utilites */
+      .glass-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8D5; /* Olive-tinted border */
+        box-shadow: 0 4px 6px -1px rgba(42, 51, 30, 0.05);
+      }
+      
+      /* Dark Mode Override (Cyber Glass) */
+      .dark .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      
+      /* Professional Light Mode Text Override */
+      .text-shimmer-light {
+           color: #2A331E; /* Olive Dark */
+           background: none;
+           text-shadow: none;
+           -webkit-text-fill-color: initial;
+      }
+      .dark .text-shimmer-light {
+           background: linear-gradient(to right, #818cf8, #ffffff, #818cf8);
+           -webkit-background-clip: text;
+           background-clip: text;
+           color: transparent;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col items-center justify-start relative overflow-x-hidden selection:bg-olive-medium selection:text-white bg-cream text-olive-dark dark:bg-dark dark:text-slate-100 transition-colors duration-300">
+    
+    <!-- Animated Background Blobs (Hidden in Light Mode for clean look) -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none opacity-0 dark:opacity-100 transition-opacity">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+      <div class="absolute top-0 right-1/4 w-96 h-96 bg-secondary/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-purple-500/30 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-5xl px-4 py-8 md:py-12 z-10">
+      
+      <!-- Header -->
+      <header class="text-center mb-12 animate-fade-in-up relative">
+        <!-- Top Controls -->
+        <div class="absolute top-0 right-2 md:right-4 flex items-center gap-3 z-50">
+             <!-- Theme Toggle -->
+             <button id="themeToggle" aria-label="Toggle Dark Mode" class="bg-white hover:bg-gray-100 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm">
+                <i class="ri-moon-line text-lg" id="themeIcon"></i>
+             </button>
+             
+             <!-- Language Toggle -->
+             <button id="langToggle" aria-label="Switch Language" class="bg-white hover:bg-gray-100 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
+               <i class="ri-translate-2"></i> <span id="langText">English</span>
+             </button>
+        </div>
+
+        <div class="inline-flex items-center gap-3 mb-2 mt-8 md:mt-0 group cursor-default">
+           <!-- Animated Logo -->
+           <div class="relative w-20 h-20 flex items-center justify-center">
+             <!-- Outer Ring -->
+             <div class="absolute inset-0 border-2 border-olive-medium/30 rounded-full animate-[spin_8s_linear_infinite]"></div>
+             <div class="absolute inset-0 border-t-2 border-olive-dark dark:border-indigo-400 rounded-full animate-[spin_8s_linear_infinite]" style="animation-direction: reverse;"></div>
+             
+             <!-- Middle Pulse -->
+             <div class="absolute inset-2 bg-olive-light/20 dark:bg-gradient-to-br dark:from-primary/20 dark:to-secondary/20 rounded-full animate-pulse"></div>
+             
+             <!-- Inner SVG -->
+             <svg class="w-10 h-10 text-olive-dark dark:text-white drop-shadow-md dark:drop-shadow-[0_0_10px_rgba(99,102,241,0.5)] z-10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM12 6L16 11H13V17H11V11H8L12 6Z" fill="currentColor"/>
+             </svg>
+           </div>
+        </div>
+        <style>
+          @keyframes textShimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+          }
+          @keyframes revealText {
+            0% { transform: translateY(20px) scale(0.9); opacity: 0; letter-spacing: -2px; }
+            100% { transform: translateY(0) scale(1); opacity: 1; letter-spacing: normal; }
+          }
+          .animate-text-shimmer {
+            background-size: 200% auto;
+            animation: textShimmer 3s linear infinite, revealText 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+          }
+        </style>
+        
+        <h1 class="text-4xl md:text-5xl font-bold text-olive-dark dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-indigo-300 dark:via-white dark:to-indigo-300 animate-text-shimmer tracking-tight mt-4" data-lang-key="app_title">
+          Social Video Downloader
+        </h1>
+        <p class="text-olive-muted dark:text-slate-400 mt-2 text-lg" data-lang-key="app_subtitle">Download HD Videos from FB, TikTok, Insta, YouTube & more.</p>
+      </header>
+
+      <!-- Search Section -->
+      <div class="relative max-w-3xl mx-auto mb-16 group z-50 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <!-- Light Mode: Clean Shadow / Dark Mode: Glow -->
+        <div class="absolute -inset-1 bg-olive-medium dark:bg-indigo-500 rounded-full blur opacity-20 dark:opacity-25 group-hover:opacity-30 dark:group-hover:opacity-50 transition duration-500"></div>
+        
+        <div class="relative flex items-center bg-white dark:bg-dark/80 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-full p-2 shadow-lg dark:shadow-2xl z-20">
+           <div class="pl-6 text-gray-400 dark:text-slate-400"><i class="ri-link text-xl"></i></div>
+           <input
+             type="text"
+             id="videoUrl"
+             aria-label="Paste Video URL"
+             class="w-full bg-transparent text-gray-800 dark:text-white px-4 py-3 text-lg focus:outline-none placeholder-gray-400 dark:placeholder-slate-500"
+             placeholder="Paste any video link here..."
+             data-lang-placeholder="placeholder_text"
+           />
+           <button 
+             id="searchBtn"
+             aria-label="Download Video"
+             class="bg-gradient-to-r from-olive-medium to-olive-muted hover:from-olive-muted hover:to-olive-dark dark:bg-gradient-to-r dark:from-primary dark:to-secondary text-white p-3 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-300 px-6 md:px-8 font-semibold uppercase tracking-wide text-sm"
+           >
+             <span class="hidden md:inline" data-lang-key="download_btn">Download</span>
+             <i class="ri-download-cloud-2-line md:hidden text-xl"></i>
+           </button>
+        </div>
+      </div>
+
+      <!-- Batch/Playlist Queue (Hidden by default) -->
+      <div id="batchQueue" class="hidden max-w-3xl mx-auto mb-8 animate-fade-in-up">
+        <div class="bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-2xl p-4 shadow-sm backdrop-blur-md">
+            <div class="flex items-center justify-between mb-3 border-b border-gray-100 dark:border-white/5 pb-2">
+                <h4 class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider flex items-center gap-2">
+                    <i class="ri-stack-line text-olive-medium dark:text-indigo-500"></i> Download Queue <span id="queueCount" class="bg-olive-light/30 dark:bg-indigo-500/20 text-olive-dark dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs">0</span>
+                </h4>
+                <button onclick="clearBatch()" aria-label="Clear All Downloads" class="text-xs text-red-500 hover:text-red-600 font-medium">Clear All</button>
+            </div>
+            <div id="queueList" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+                <!-- Queue Items injected here -->
+            </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="hidden text-center my-12">
+        <div class="w-16 h-16 border-4 border-gray-200 dark:border-white/10 border-t-indigo-600 dark:border-t-secondary rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="text-gray-500 dark:text-slate-300 animate-pulse" data-lang-key="fetching_info">Fetching video info...</p>
+      </div>
+
+      <!-- Error Message -->
+      <div id="errorMessage" class="hidden max-w-2xl mx-auto bg-red-50 border border-red-100 text-red-600 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-300 px-6 py-4 rounded-xl text-center mb-8">
+        <div class="flex items-center justify-center gap-3">
+          <i class="ri-error-warning-fill text-2xl"></i>
+          <span id="errorText">Something went wrong.</span>
+        </div>
+      </div>
+
+      <!-- Video Result Container -->
+      <div id="videoContainer" class="hidden glass-card rounded-3xl p-6 md:p-8 animate-fade-in-up">
+         <!-- Content injected by JS -->
+      </div>
+
+      <!-- Features Grid -->
+      <div class="mt-12 md:mt-20 pt-10 border-t border-gray-200 dark:border-white/5 animate-fade-in-up" style="animation-delay: 0.2s;">
+         <h2 class="text-2xl md:text-3xl font-bold text-center mb-6 md:mb-10 text-gray-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-indigo-400 dark:to-pink-400" data-lang-key="features_title">
+           ✨ Why Choose Us?
+         </h2>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Feature 1 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-primary/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-rocket-fill text-2xl text-olive-muted dark:text-primary"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_fast_title">Super Fast</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_fast_desc">Lightning fast download speeds for all media formats.</p>
+            </div>
+            <!-- Feature 2 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-secondary/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-hd-line text-2xl text-olive-muted dark:text-secondary"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_hd_title">4K & HD Support</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_hd_desc">Download in crystal clear 4K, 1080p, or 720p resolution.</p>
+            </div>
+            <!-- Feature 3 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-green-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-shield-check-fill text-2xl text-olive-muted dark:text-green-400"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_safe_title">100% Safe</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_safe_desc">No ads, no malware. Completely free and secure to use.</p>
+            </div>
+            <!-- Feature 4 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-blue-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-device-line text-2xl text-olive-muted dark:text-blue-400"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_devices_title">All Devices</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_devices_desc">Works perfectly on iPhone, Android, PC, and Tablets.</p>
+            </div>
+            <!-- Feature 5 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-orange-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-music-2-fill text-2xl text-olive-muted dark:text-orange-400"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_audio_title">Audio Extractor</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_audio_desc">Convert video to high-quality MP3 audio instantly.</p>
+            </div>
+            <!-- Feature 6 -->
+            <div class="glass-card p-6 rounded-2xl hover:bg-olive-light/10 dark:hover:bg-white/5 transition-colors duration-300 group">
+              <div class="w-12 h-12 bg-olive-light/20 dark:bg-purple-500/20 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <i class="ri-magic-line text-2xl text-olive-muted dark:text-purple-400"></i>
+              </div>
+              <h3 class="text-xl font-semibold mb-2 text-olive-dark dark:text-white" data-lang-key="feat_watermark_title">No Watermark</h3>
+              <p class="text-olive-muted dark:text-slate-400 text-sm" data-lang-key="feat_watermark_desc">Download TikTok and Reels without any annoying watermarks.</p>
+            </div>
+         </div>
+      </div>
+
+    </main>
+
+    <!-- History Section (Hidden by default) -->
+    <div id="historySection" class="w-full max-w-5xl px-4 mx-auto mb-20 hidden animate-fade-in-up">
+       <div class="flex items-center justify-between mb-6 border-b border-gray-200 dark:border-white/5 pb-4">
+          <h3 class="text-2xl font-bold text-olive-dark dark:text-white flex items-center gap-2">
+              <i class="ri-history-line text-olive-medium dark:text-indigo-400"></i> 
+              <span data-lang-key="history_title">Recent Downloads</span>
+          </h3>
+          <button onclick="clearHistory()" aria-label="Clear Recent History" class="text-sm text-slate-500 hover:text-red-400 transition-colors px-3 py-1 rounded-lg hover:bg-white/5">
+              Clear All
+          </button>
+       </div>
+       <div id="historyGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-6 text-olive-muted text-sm relative z-10">
+      <p data-lang-key="footer_text">&copy; 2024 Social Video Downloader. Built with ❤️.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
