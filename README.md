@@ -1,4 +1,4 @@
-<img width="1918" height="923" alt="image" src="https://github.com/user-attachments/assets/ad02e851-8faa-4712-ac24-f25e866d27a9" /># 📥 Social Video Downloader - Premium All-in-One Solution
+# 📥 Social Video Downloader - Premium All-in-One Solution
 
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
