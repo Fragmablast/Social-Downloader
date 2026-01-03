@@ -54,7 +54,7 @@ async function fetchSocialData(videoUrl, apiKey) {
  * Iterates through API keys if one fails (Rate Limit/Quota Exceeded).
  */
 async function fetchWithRetry(videoUrl) {
-    const loadingText = document.querySelector("#loading p");
+    const loadingText = document.getElementById("loadingStatus");
     const keys = APP_CONFIG.apiKeys;
     let lastError = null;
 
@@ -65,7 +65,10 @@ async function fetchWithRetry(videoUrl) {
         try {
             // Log which key we are using (for debugging)
             if(i > 0) console.log(`Switching to Fallback Key #${i+1}`);
-            if(loadingText && i > 0) loadingText.innerText = `Retrying with server ${i+1}...`;
+            
+            if(loadingText && i > 0) {
+                 loadingText.innerText = `Server busy, switching to Key ${i+1}/${keys.length}...`;
+            }
 
             const rawData = await fetchSocialData(videoUrl, currentKey);
             
@@ -210,7 +213,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const text = await navigator.clipboard.readText();
             if (text) {
                 input.value = text;
-                showToast("Link Pasted!", "success");
+                // Smart "Paste & Go"
+                if(text.startsWith('http')) {
+                     showToast("Link Pasted! searching...", "success");
+                     initiateSearch();
+                } else {
+                     showToast("Link Pasted!", "success");
+                }
             }
         } catch (err) {
             showToast("Please allow clipboard access", "error");
@@ -246,7 +255,124 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 4. Restore History
     renderHistory();
+
+    // 5. Pro Features Init
+    initSettings();
+    initDragDrop();
 });
+
+// ---------------------------
+// Pro Features Logic
+// ---------------------------
+
+function initDragDrop() {
+    const container = document.getElementById('searchContainer');
+    const overlay = document.getElementById('dragOverlay');
+    const input = document.getElementById('videoUrl');
+
+    if(!container || !overlay) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        container.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        container.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+        }, false);
+    });
+
+    container.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if(files.length > 0) {
+            const file = files[0];
+            if(file.type === "text/plain" || file.name.endsWith('.txt')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                     input.value = e.target.result;
+                     showToast("File loaded! Starting Batch...", "success");
+                     initiateSearch(); // Triggers batch logic automatically
+                };
+                reader.readAsText(file);
+            } else {
+                showToast("Only .txt files are supported for batch", "error");
+            }
+        }
+    });
+}
+
+function initSettings() {
+    const btn = document.getElementById('settingsToggle');
+    if(!btn) return;
+
+    btn.addEventListener('click', () => {
+        // Simple Prompt for now (can be a modal later)
+        const current = localStorage.getItem('social_dl_quality') || 'best';
+        // Create Modal HTML dynamically
+        const modal = document.createElement('div');
+        modal.className = "fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in-up";
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-white/10 p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">⚙️ Download Settings</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 p-3 rounded-xl border ${current==='best'?'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10':'border-gray-200 dark:border-white/10'} cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5" onclick="saveSetting('best', this)">
+                        <i class="ri-hd-line text-xl ${current==='best'?'text-indigo-600':'text-gray-400'}"></i>
+                        <div>
+                            <div class="font-semibold text-gray-800 dark:text-white">Best Quality (4K/HD)</div>
+                            <div class="text-xs text-gray-500">Always select highest resolution</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-xl border ${current==='saver'?'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10':'border-gray-200 dark:border-white/10'} cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5" onclick="saveSetting('saver', this)">
+                        <i class="ri-smartphone-line text-xl ${current==='saver'?'text-indigo-600':'text-gray-400'}"></i>
+                        <div>
+                            <div class="font-semibold text-gray-800 dark:text-white">Data Saver (480p/720p)</div>
+                            <div class="text-xs text-gray-500">Faster downloads, less data</div>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 rounded-xl border ${current==='audio'?'border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10':'border-gray-200 dark:border-white/10'} cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5" onclick="saveSetting('audio', this)">
+                        <i class="ri-music-2-line text-xl ${current==='audio'?'text-indigo-600':'text-gray-400'}"></i>
+                        <div>
+                            <div class="font-semibold text-gray-800 dark:text-white">Audio Mode (MP3)</div>
+                            <div class="text-xs text-gray-500">Prefer audio extraction</div>
+                        </div>
+                    </label>
+                </div>
+                <button onclick="this.parentElement.parentElement.remove()" class="mt-6 w-full py-2 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 text-gray-700 dark:text-white rounded-xl font-medium transition">Close</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    });
+}
+
+// Global for inline onclick
+window.saveSetting = (val, el) => {
+    localStorage.setItem('social_dl_quality', val);
+    showToast(`Preference saved: ${val.toUpperCase()}`, "success");
+    // Close modal after delay
+    setTimeout(() => el.parentElement.parentElement.parentElement.remove(), 300);
+};
+
+function shareResult(url, title) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Download Video',
+            text: `Check out this video: ${title}`,
+            url: url,
+        }).catch(() => {});
+    } else {
+        navigator.clipboard.writeText(url).then(() => {
+            showToast("Video Link Copied!", "success");
+        });
+    }
+}
 
 // History Logic
 function saveToHistory(data, url) {
@@ -360,7 +486,7 @@ async function initiateSearch() {
      const rawData = await fetchWithRetry(cleanUrl);
      const data = normalizeSocialData(rawData, cleanUrl); // Normalize first!
      
-     renderVideoUI(data);
+     renderVideoUI(data, cleanUrl);
      saveToHistory(data, cleanUrl);
      
      // Success Toast
@@ -706,7 +832,7 @@ function mapSocialStream(s) {
 }
 
 // UI Rendering (Tailwind Edition)
-function renderVideoUI(data) {
+function renderVideoUI(data, url) {
   const t = translations[currentLang]; // Get current translations
   const container = document.getElementById("videoContainer");
   const safeGet = (path, fallback) => path || fallback;
@@ -727,9 +853,14 @@ function renderVideoUI(data) {
   let html = `
         <div class="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-white/10 pb-4">
             <h3 class="text-lg text-gray-700 dark:text-slate-300 font-medium">${t.result_found}</h3>
-            <button id="resetBtn" onclick="resetUI()" class="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 flex items-center gap-1 transition-colors">
-                <i class="ri-refresh-line"></i> ${t.reset_btn}
-            </button>
+            <div class="flex items-center gap-4">
+                 <button onclick="shareResult('${url}', '${data.title.replace(/'/g, "\\'")}')" class="text-sm text-indigo-500 dark:text-indigo-400 hover:text-indigo-600 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors" title="Share Link">
+                    <i class="ri-share-forward-line"></i> Share
+                 </button>
+                 <button id="resetBtn" onclick="resetUI()" class="text-sm text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 flex items-center gap-1 transition-colors">
+                     <i class="ri-refresh-line"></i> ${t.reset_btn}
+                 </button>
+            </div>
         </div>
 
         <div class="flex flex-col md:flex-row gap-8 items-start">
@@ -759,35 +890,34 @@ function renderVideoUI(data) {
                 </div>
 
                 <!-- Tabs/Sections -->
-                ${
-                  showVideo
-                    ? `
+                ${showVideo ? `
                 <div class="mb-8">
                     <h4 class="flex items-center gap-2 text-gray-800 dark:text-white font-semibold mb-4 text-lg">
                         <span class="p-1 rounded bg-indigo-50 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400"><i class="ri-film-fill"></i></span> ${t.video_formats}
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3" id="videoOptions"></div>
-                </div>`
-                    : ""
-                }
+                </div>` : ''}
 
-                ${
-                  showAudio
-                    ? `
-                <div>
+                ${showAudio ? `
+                <div id="audioSection">
                     <h4 class="flex items-center gap-2 text-gray-800 dark:text-white font-semibold mb-4 text-lg">
                         <span class="p-1 rounded bg-pink-50 dark:bg-pink-500/20 text-pink-600 dark:text-pink-400"><i class="ri-music-2-fill"></i></span> ${t.audio_formats}
                     </h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3" id="audioOptions"></div>
-                </div>`
-                    : ""
-                }
+                </div>` : ''}
             </div>
         </div>
     `;
 
   container.innerHTML = html;
 
+  // Filter Logic:
+  // If preference is 'audio', we ONLY render audio buttons to keep it clean.
+  // If preference is 'video' (best/saver), we render video buttons.
+  // BUT: user said "smooth", so let's render ALL but use the "RECOMMENDED" highlight we added before.
+  // To make it truly "Fixed", let's improve the rendering to show sizing more clearly.
+
+  // Render Logic
   if (showVideo)
     renderOptions(
       document.getElementById("videoOptions"),
@@ -804,6 +934,14 @@ function renderVideoUI(data) {
     );
 
   container.style.display = "block";
+  
+  // 6. Focus Mode: Scroll to specific section if 'audio' preference is set
+  const pref = localStorage.getItem('social_dl_quality') || 'best';
+  if (pref === 'audio' && showAudio) {
+      document.getElementById("audioOptions").scrollIntoView({ behavior: 'smooth', block: 'center' });
+  } else {
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function renderOptions(container, items, type, title) {
@@ -836,9 +974,25 @@ function renderOptions(container, items, type, title) {
         ? "bg-pink-50 text-pink-600 dark:bg-pink-500/20 dark:text-pink-300"
         : "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300";
 
+    // Auto-Quality Logic
+    const pref = localStorage.getItem('social_dl_quality') || 'best';
+    let isRecommended = false;
+    if (pref === 'audio' && type === 'audio' && index === 0) isRecommended = true;
+    if (type === 'video') {
+         const q = (v.quality + '').toLowerCase();
+         if (pref === 'saver' && (q.includes('360') || q.includes('480') || q.includes('sd'))) isRecommended = true;
+         if (pref === 'best' && index === 0) isRecommended = true;
+    }
+
+    if(isRecommended) {
+        btn.classList.add('ring-2', 'ring-olive-medium', 'dark:ring-indigo-500');
+    }
+
     btn.innerHTML = `
             <!-- Subtle Shine Effect -->
             <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+            
+            ${isRecommended ? '<div class="absolute top-0 right-0 bg-olive-medium dark:bg-indigo-500 text-white text-[10px] px-2 py-0.5 rounded-bl-lg font-bold z-20">RECOMMENDED</div>' : ''}
 
             <div class="flex items-center gap-3 relative z-10 flex-1 min-w-0">
                 <div class="w-10 h-10 shrink-0 rounded-lg bg-gray-100 dark:bg-black/20 flex items-center justify-center text-gray-500 dark:text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-white transition-colors">
@@ -849,14 +1003,15 @@ function renderOptions(container, items, type, title) {
                         <span class="truncate">${qualityText}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded ${extBadgeColor} font-bold tracking-wider border border-gray-200 dark:border-white/5 shrink-0">${v.extension.toUpperCase()}</span>
                     </div>
+                    ${v.sizeText ? `<div class="text-xs text-gray-500 dark:text-slate-500 mt-0.5">${v.sizeText}</div>` : ''}
                 </div>
             </div>
             
             <div class="flex items-center gap-2 relative z-10 shrink-0">
                 ${
-                  type === 'audio' 
-                  ? `<button onclick="event.stopPropagation(); previewAudio('${v.url}', this)" class="w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-500/10 text-pink-500 hover:bg-pink-100 dark:hover:bg-pink-500/20 flex items-center justify-center transition-colors" title="Preview"><i class="ri-play-mini-fill"></i></button>`
-                  : ''
+                    type === 'audio' 
+                    ? `<div role="button" onclick="event.stopPropagation(); previewAudio('${v.url}', this)" class="w-8 h-8 rounded-full bg-pink-50 dark:bg-pink-500/10 text-pink-500 hover:bg-pink-100 dark:hover:bg-pink-500/20 flex items-center justify-center transition-colors cursor-pointer" title="Preview"><i class="ri-play-mini-fill"></i></div>`
+                    : ''
                 }
                 ${
                   sizeText
@@ -869,10 +1024,12 @@ function renderOptions(container, items, type, title) {
             </div>
          `;
 
-    btn.setAttribute("data-url", v.url);
-    btn.addEventListener("click", function () {
-      handleDownloadClick(this, v.url, title, type);
-    });
+    // Handle Click (Existing Logic)
+    btn.onclick = (e) => {
+       // Prevent preview button click from triggering download
+       if(e.target.closest('[title="Preview"]')) return;
+       handleDownloadClick(btn, v.url, title, type);
+    };
 
     container.appendChild(btn);
   });
