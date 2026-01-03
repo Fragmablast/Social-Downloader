@@ -5,6 +5,8 @@
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![PWA](https://img.shields.io/badge/PWA-Ready-success?style=for-the-badge)
 
+### 🚀 [Live Site 1](https://fragmablast.github.io/Social-Downloader/) | 🚀 [Live Site 2](https://downloader.bugmohol.com/)
+
 A professional, high-performance web application designed to download videos from major social platforms (Facebook, TikTok, Instagram, YouTube, Twitter/X, etc.) in **HD/4K quality**. This project features a stunning **"Cream & Olive"** aesthetic UI and a **robust backend** that automatically handles API rate limits.
 
 ---
@@ -41,6 +43,7 @@ A professional, high-performance web application designed to download videos fro
    ```bash
    git clone https://github.com/YourUsername/Social-Downloader.git
    ```
+
 2. **Open the Project**
 
    - Simply open `index.html` in your browser.
@@ -48,8 +51,8 @@ A professional, high-performance web application designed to download videos fro
      ```bash
      npx serve .
      ```
-3. **API Configuration**
 
+3. **API Configuration**
    - The project comes with a pre-configured key pool in `script.js`.
    - To add your own keys, edit the `APP_CONFIG` object:
      ```javascript
@@ -62,13 +65,7 @@ A professional, high-performance web application designed to download videos fro
 
 ## 📸 Screenshots
 
-<img width="1280" height="1280" alt="image" src="https://github.com/user-attachments/assets/89669f0d-120a-4b29-89ad-0fd1ca8f5e2e" />
-<img width="1920" height="921" alt="image" src="https://github.com/user-attachments/assets/5b970ebd-bfb8-4536-b266-983e81ed1aa1" />
-<img width="1918" height="923" alt="image" src="https://github.com/user-attachments/assets/b35800bd-1b52-4cdf-a243-a216d0097891" />
-<img width="1920" height="919" alt="image" src="https://github.com/user-attachments/assets/4dd5e030-fa61-4b82-9ab5-5dce195878a0" />
-
-
-
+_(Add your screenshots here)_
 
 ---
 
