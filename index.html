@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Social Video Downloader - Download HD Videos No Watermark</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <meta name="description" content="Download high-quality videos from Facebook, TikTok, Instagram, and YouTube for free. No watermarks, fast speeds, and supports all devices." />
     <meta name="keywords" content="video downloader, facebook downloader, tiktok no watermark, instagram saver, youtube downloader, mp4 converter, hd video download" />
     <meta name="author" content="Social Downloader" />
@@ -96,7 +97,6 @@
         -webkit-backdrop-filter: blur(10px);
       }
       
-      /* Professional Light Mode Text Override */
       .text-shimmer-light {
            color: #2A331E; /* Olive Dark */
            background: none;
@@ -109,13 +109,46 @@
            background-clip: text;
            color: transparent;
       }
+      
+      /* Skeleton Shimmer Animation */
+      @keyframes skeleton-loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .skeleton-box {
+        position: relative;
+        overflow: hidden;
+        background-color: rgba(200, 200, 200, 0.2);
+        border-radius: 0.5rem;
+      }
+      .dark .skeleton-box {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+      .skeleton-box::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: skeleton-loading 1.5s infinite;
+      }
+      .dark .skeleton-box::after {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+      }
     </style>
-    
-    <!-- Vercel Web Analytics -->
-    <script>
-      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/insights/script.js"></script>
   </head>
   <body class="min-h-screen flex flex-col items-center justify-start relative overflow-x-hidden selection:bg-olive-medium selection:text-white bg-cream text-olive-dark dark:bg-dark dark:text-slate-100 transition-colors duration-300">
     
@@ -141,6 +174,11 @@
              <!-- Language Toggle -->
              <button id="langToggle" aria-label="Switch Language" class="bg-white hover:bg-gray-100 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white px-4 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-2 shadow-sm">
                <i class="ri-translate-2"></i> <span id="langText">English</span>
+             </button>
+             
+             <!-- Settings Toggle -->
+             <button id="settingsToggle" aria-label="Settings" class="bg-white hover:bg-gray-100 dark:bg-white/10 dark:hover:bg-white/20 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm">
+                <i class="ri-settings-3-line text-lg"></i>
              </button>
         </div>
 
@@ -182,7 +220,13 @@
       </header>
 
       <!-- Search Section -->
-      <div class="relative max-w-3xl mx-auto mb-16 group z-50 animate-fade-in-up" style="animation-delay: 0.1s;">
+      <div id="searchContainer" class="relative max-w-3xl mx-auto mb-16 group z-50 animate-fade-in-up" style="animation-delay: 0.1s;">
+        <!-- Drag Overlay (Hidden by default) -->
+        <div id="dragOverlay" class="absolute inset-0 bg-indigo-500/90 rounded-full flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+            <div class="text-white font-bold text-xl flex items-center gap-2">
+                <i class="ri-file-text-line text-3xl"></i> Drop Text File to Batch Download
+            </div>
+        </div>
         <!-- Light Mode: Clean Shadow / Dark Mode: Glow -->
         <div class="absolute -inset-1 bg-olive-medium dark:bg-indigo-500 rounded-full blur opacity-20 dark:opacity-25 group-hover:opacity-30 dark:group-hover:opacity-50 transition duration-500"></div>
         
@@ -222,10 +266,39 @@
         </div>
       </div>
 
-      <!-- Loading State -->
-      <div id="loading" class="hidden text-center my-12">
-        <div class="w-16 h-16 border-4 border-gray-200 dark:border-white/10 border-t-indigo-600 dark:border-t-secondary rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-500 dark:text-slate-300 animate-pulse" data-lang-key="fetching_info">Fetching video info...</p>
+      <!-- Loading State (Skeleton UI) -->
+      <div id="loading" class="hidden w-full max-w-5xl mx-auto glass-card rounded-3xl p-6 md:p-8 animate-fade-in-up">
+         <div class="flex flex-col md:flex-row gap-8 items-start">
+            <!-- Left: Thumb Skeleton -->
+            <div class="w-full md:w-5/12 aspect-video skeleton-box rounded-2xl"></div>
+            
+            <!-- Right: Info Skeleton -->
+            <div class="w-full md:w-7/12 space-y-4">
+                <!-- Title Lines -->
+                <div class="h-8 w-3/4 skeleton-box"></div>
+                
+                <!-- Avatar Line -->
+                <div class="flex items-center gap-3 my-6">
+                    <div class="h-10 w-10 rounded-full skeleton-box"></div>
+                    <div class="space-y-2">
+                        <div class="h-4 w-32 skeleton-box"></div>
+                        <div class="h-3 w-24 skeleton-box"></div>
+                    </div>
+                </div>
+
+                <!-- Buttons Area -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
+                    <div class="h-16 skeleton-box rounded-xl"></div>
+                    <div class="h-16 skeleton-box rounded-xl"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="h-16 skeleton-box rounded-xl"></div>
+                    <div class="h-16 skeleton-box rounded-xl"></div>
+                </div>
+                <!-- Retry Status Text (Hidden unless retrying) -->
+                <p id="loadingStatus" class="text-sm text-center text-olive-muted dark:text-slate-400 animate-pulse mt-2"></p>
+            </div>
+         </div>
       </div>
 
       <!-- Error Message -->
@@ -320,11 +393,5 @@
     </footer>
 
     <script src="script.js"></script>
-    
-    <!-- Vercel Speed Insights -->
-    <script>
-      window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
-    </script>
-    <script defer src="/_vercel/speed-insights/script.js"></script>
   </body>
 </html>
